@@ -1,4 +1,4 @@
-# python3-gce
+# ansible-python3-gce
 gce3.py - the Python 3 version of the Google Cloud Engine's Ansible Inventory Plugin.
 
 ## Github Repository
@@ -19,6 +19,7 @@ https://github.com/ansible/ansible/pull/26032
 To use gce3.py as a dynamic inventory, I recommend you to read:
 http://docs.ansible.com/ansible/guide_gce.html
 
+## Original version
 The original version (gce.py, the Python 2 version) can be found in
 Ansible's official repository:
 https://github.com/ansible/ansible/blob/devel/contrib/inventory/gce.py
