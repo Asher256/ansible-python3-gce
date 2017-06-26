@@ -1,5 +1,23 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 # Copyright 2013 Google Inc.
+#
+# PYTHON 3 VERSION NOTE:
+# ===========================================================================
+# This version of gce.py was modified by Asher256 <asher256@gmail.com>
+# to make it compatible with Python 3.
+#
+# Github repo of gce3.py (Python 3 version):
+# https://github.com/Asher256/python3-gce
+#
+# Asher256 modified gce.py (Ansible's Google Cloud Dynamic Inventory)
+# because the Python 2 version of gce.py didn't work well with
+# Python 2 + python2-apache-libcloud 1.5.0-1 on Arch Linux.
+#
+# This version of compatible with Python 2 (backward compatible) and Python 3.
+#
+# A pull request was sent to make gce3.py part of Ansible:
+# https://github.com/ansible/ansible/pull/26032
+# ===========================================================================
 #
 # This file is part of Ansible
 #
@@ -93,7 +111,10 @@ import argparse
 
 from time import time
 
-import ConfigParser
+if sys.version_info >= (3, 0):
+    import configparser
+else:
+    import ConfigParser as configparser
 
 import logging
 logging.getLogger('libcloud.common.google').addHandler(logging.NullHandler())
@@ -214,7 +235,7 @@ class GceInventory(object):
         # This provides empty defaults to each key, so that environment
         # variable configuration (as opposed to INI configuration) is able
         # to work.
-        config = ConfigParser.SafeConfigParser(defaults={
+        config = configparser.SafeConfigParser(defaults={
             'gce_service_account_email_address': '',
             'gce_service_account_pem_file_path': '',
             'gce_project_id': '',
@@ -272,13 +293,17 @@ class GceInventory(object):
         # exists.
         secrets_path = self.config.get('gce', 'libcloud_secrets')
         secrets_found = False
-        try:
-            import secrets
-            args = list(getattr(secrets, 'GCE_PARAMS', []))
-            kwargs = getattr(secrets, 'GCE_KEYWORD_PARAMS', {})
-            secrets_found = True
-        except:
-            pass
+
+        # check if secrets exist in the current directory, to avoid
+        # loading the python 3 module 'secrets'
+        if os.path.exists('secrets.py'):
+            try:
+                import secrets
+                args = list(getattr(secrets, 'GCE_PARAMS', []))
+                kwargs = getattr(secrets, 'GCE_KEYWORD_PARAMS', {})
+                secrets_found = True
+            except:
+                pass
 
         if not secrets_found and secrets_path:
             if not secrets_path.endswith('secrets.py'):
