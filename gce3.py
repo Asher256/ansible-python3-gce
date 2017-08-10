@@ -17,6 +17,7 @@
 #
 # A pull request was sent to make gce3.py part of Ansible:
 # https://github.com/ansible/ansible/pull/26032
+# This file is part of Ansible
 # ===========================================================================
 #
 # This file is part of Ansible
@@ -294,16 +295,13 @@ class GceInventory(object):
         secrets_path = self.config.get('gce', 'libcloud_secrets')
         secrets_found = False
 
-        # check if secrets exist in the current directory, to avoid
-        # loading the python 3 module 'secrets'
-        if os.path.exists('secrets.py'):
-            try:
-                import secrets
-                args = list(getattr(secrets, 'GCE_PARAMS', []))
-                kwargs = getattr(secrets, 'GCE_KEYWORD_PARAMS', {})
-                secrets_found = True
-            except:
-                pass
+        try:
+            import secrets
+            args = list(secrets.GCE_PARAMS)
+            kwargs = secrets.GCE_KEYWORD_PARAMS
+            secrets_found = True
+        except:
+            pass
 
         if not secrets_found and secrets_path:
             if not secrets_path.endswith('secrets.py'):
